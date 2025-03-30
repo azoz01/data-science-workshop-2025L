@@ -24,7 +24,6 @@ class LinguisticFeatureProcessor:
     def process_sheet(self, sheet_name: str) -> pd.DataFrame:
         sheet_data = pd.read_excel(self.data, sheet_name)
 
-        # todo: add processing logic
         sheet_data["SENT"] = sheet_data["response"].apply(
             lambda x: len(sent_tokenize(x))
         )
