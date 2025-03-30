@@ -3,9 +3,11 @@ import pathlib
 import os
 import pandas as pd
 import nltk
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import cmudict
 
 
+nltk.download("cmudict")
 nltk.download("punkt_tab")
 
 
@@ -14,6 +16,7 @@ class LinguisticFeatureProcessor:
         self.data_path = data_path
         self.output_path = output_path
         self.data = pd.ExcelFile(self.data_path)
+        self.syllable_dict = cmudict.dict()
 
     def __del__(self):
         self.data.close()
@@ -21,12 +24,23 @@ class LinguisticFeatureProcessor:
     def get_sheet_names(self) -> list[str]:
         return self.data.sheet_names
 
+    def _count_polysyllables(self, text: str) -> int:
+        ctx: int = 0 
+        for word in word_tokenize(text):
+            if word not in self.syllable_dict:
+                continue
+            if max([len([phoneme for phoneme in pronunciation if phoneme[-1].isdigit()]) for pronunciation in self.syllable_dict[word]]) >= 3:
+                ctx += 1
+        return ctx
+
     def process_sheet(self, sheet_name: str) -> pd.DataFrame:
         sheet_data = pd.read_excel(self.data, sheet_name)
 
         sheet_data["SENT"] = sheet_data["response"].apply(
             lambda x: len(sent_tokenize(x))
         )
+
+        sheet_data["polysyllables"] = sheet_data["response"].apply(lambda x: self._count_polysyllables(x))
         sheet_data["abstraction"] = (
             sheet_data["DAV"]
             + 2 * sheet_data["IAV"]
@@ -37,7 +51,7 @@ class LinguisticFeatureProcessor:
         )
         sheet_data["lexical diversity"] = sheet_data["unique_words_cnt"]
         sheet_data["reading difficulty"] = (
-            1.043 * sheet_data["BigWords"].pow(1.0 / 2) * 30 / sheet_data["SENT"]
+            1.043 * sheet_data["polysyllables"].pow(1.0 / 2) * 30 / sheet_data["SENT"]
             + 3.1291
         )
         sheet_data["analytical"] = sheet_data["Analytic"]
