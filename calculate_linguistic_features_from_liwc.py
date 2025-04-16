@@ -5,6 +5,7 @@ import pandas as pd
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import cmudict
+import re
 
 
 nltk.download("cmudict")
@@ -32,6 +33,11 @@ class LinguisticFeatureProcessor:
             if max([len([phoneme for phoneme in pronunciation if phoneme[-1].isdigit()]) for pronunciation in self.syllable_dict[word]]) >= 3:
                 ctx += 1
         return ctx
+    
+    def _count_normalized_unique_words(self, text: str) -> float:
+        words = len(re.findall(r'\b\w+\b', text.lower()))
+        unique_words = len(set(re.findall(r'\b\w+\b', text.lower())))
+        return unique_words / words if words != 0 else 1.0
 
     def process_sheet(self, sheet_name: str) -> pd.DataFrame:
         sheet_data = pd.read_excel(self.data, sheet_name)
@@ -49,6 +55,8 @@ class LinguisticFeatureProcessor:
         # ) / (
         #     sheet_data["DAV"] + sheet_data["IAV"] + sheet_data["SV"] + sheet_data["adj"]
         # )
+        if "unique_words_cnt" not in sheet_data.columns:
+            sheet_data["unique_words_cnt"] = sheet_data["response"].apply(lambda x: self._count_normalized_unique_words(x))
         sheet_data["lexical diversity"] = sheet_data["unique_words_cnt"]
         sheet_data["reading difficulty"] = (
             1.043 * sheet_data["polysyllables"].pow(1.0 / 2) * 30 / sheet_data["SENT"]
@@ -91,8 +99,12 @@ def main():
     linguistic_feature_processor = LinguisticFeatureProcessor(args.data, args.output)
     sheets = args.sheets or linguistic_feature_processor.get_sheet_names()
     for sheet in sheets:
-        linguistic_feature_processor.process_and_save(sheet)
-
+        if sheet == "source":
+            continue
+        try:
+            linguistic_feature_processor.process_and_save(sheet)
+        except:
+            print(f"{sheet} jest zjebane")
 
 if __name__ == "__main__":
     main()
