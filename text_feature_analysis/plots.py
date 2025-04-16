@@ -25,6 +25,7 @@ def get_group_and_color(name: str) -> Tuple[int, str]:
 def plot_features_distribution(
     male_df: pd.DataFrame,
     female_df: pd.DataFrame,
+    baseline_df: pd. DataFrame,
     all_pvalues: dict,
     pvalue: float,
     model_name: str,
@@ -35,10 +36,11 @@ def plot_features_distribution(
     path_to_save: str = None,
     show: bool = True
 ) -> None:
+
     # dynamically caluclate number of rows and columns
     num_features = len(all_pvalues)
-    num_cols = min(max_cols, num_features)
-    num_rows = int(np.ceil(num_features / num_cols))
+    num_cols = max(min(max_cols, num_features), 1)
+    num_rows = max(int(np.ceil(num_features / num_cols)), 1)
 
     # dynamically set figure size based on rows and columns
     fig_width = num_cols * base_width
@@ -55,6 +57,9 @@ def plot_features_distribution(
 
     # plot KDE
     for ax, col in zip(axes, all_pvalues.keys()):
+        sns.kdeplot(
+            baseline_df[col], label="baseline", fill=True, alpha=0.5, ax=ax, color="lightgrey"
+        )
         sns.kdeplot(
             female_df[col], label="female", fill=True, alpha=0.5, ax=ax, color="hotpink"
         )
@@ -139,7 +144,7 @@ def plot_cohens_d_features(
 
     plt.show() if show else plt.close()
 
-def plot_total_cohens_d(total_cohens_d: dict) -> None:
+def plot_total_cohens_d(total_cohens_d: dict, show: bool = True, path_to_save: str = None) -> None:
     
     models = list(total_cohens_d.keys())
     values = list(total_cohens_d.values())
@@ -158,10 +163,15 @@ def plot_total_cohens_d(total_cohens_d: dict) -> None:
 
     plt.xlabel("Model", fontsize=14)
     plt.ylabel("Cohen's d value", fontsize=14)
-    plt.title("Average Cohen's d value comparison across all models", fontsize=16)
+    plt.title("Average Cohen's d comparison across all models", fontsize=16)
     plt.xticks(rotation=45, ha='right', rotation_mode='anchor')
     plt.ylim(0, max(sorted_values) * 1.1)  
 
     plt.subplots_adjust(bottom=0.2, left=0.15, right=0.9)
 
-    plt.show()
+    # save and show
+    if path_to_save:
+        plt.tight_layout()
+        plt.savefig(path_to_save + f'/cohens_d_total.png')
+
+    plt.show() if show else plt.close()

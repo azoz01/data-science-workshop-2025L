@@ -40,6 +40,7 @@ def compute_wilcoxon_pvalues(
             np.array(female_df[feature]),
             np.array(male_df[feature]),
             alternative="two-sided",
+            nan_policy="omit"
         )
         wilcoxon_pvalues[feature] = res.pvalue
 
