@@ -31,6 +31,9 @@ def get_available_cols(text_feature_cols: List[str], model_name: str, male_df: p
 def compute_wilcoxon_pvalues(
     female_df: pd.DataFrame, male_df: pd.DataFrame, text_feature_cols: List[str], model_name: str
 ) -> dict:
+    """ 
+    returns sorted pvalues
+    """
     wilcoxon_pvalues = dict()
 
     available_cols = get_available_cols(text_feature_cols, model_name, male_df, female_df)
