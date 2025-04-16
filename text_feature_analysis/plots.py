@@ -78,25 +78,43 @@ def plot_features_distribution(
         
     plt.show() if show else plt.close()
 
+def plot_cohens_d_features(
+    sorted_means: dict,
+    model_name: str,
+    path_to_save: str = None,
+    show: bool = True,
+    across_models: bool = False,
+    model_grouping: bool = False
+) -> None:
 
-def plot_mean_differences(sorted_means: dict, model_name: str, path_to_save: str = None, show: bool = True, across_models: bool = False) -> None:
+    if model_grouping:
+        feature_data = [
+            (feature, sorted_means[feature], *get_group_and_color(feature))
+            for feature in sorted_means
+        ]
+        feature_data.sort(key=lambda x: x[2])  # sort by group
 
-    colors = ["skyblue" if val > 0 else "hotpink" for val in sorted_means.values()]
+        sorted_features = [f[0] for f in feature_data]
+        sorted_values = [f[1] for f in feature_data]
+    else:
+        sorted_features = list(sorted_means.keys())
+        sorted_values = list(sorted_means.values())
+        
+    sorted_colors = ["skyblue" if val > 0 else "hotpink" for val in sorted_values]
 
     # figure and plot
     figsize = (4, 6) if across_models else (12, 18)
-    
     fig, ax = plt.subplots(figsize=figsize)
 
     sns.barplot(
-        y=list(sorted_means.keys()),
-        x=list(sorted_means.values()),
-        hue=list(sorted_means.keys()),
-        palette=colors,
+        y=sorted_features,
+        x=sorted_values,
+        palette=sorted_colors,
         ax=ax,
     )
-    ax.set_xlabel("Normalized Mean Difference (male - female)")
-    ax.set_ylabel("Columns")
+
+    ax.set_xlabel("Cohen's d value (male - female)")
+    ax.set_ylabel("Text features")
     ax.grid()
 
     # legend and title
@@ -113,19 +131,18 @@ def plot_mean_differences(sorted_means: dict, model_name: str, path_to_save: str
         ncol=2,
         bbox_to_anchor=(0.0, 1.01, 1.0, 0.102),
     )
-    ax.set_title(f"Normalized Differences Between Means in {model_name}", pad=40)
+    ax.set_title(f"Cohen's d value in {model_name}", pad=40)
 
     # save and show
     if path_to_save:
-        plt.savefig(path_to_save+f'/{model_name}.png')
+        plt.savefig(path_to_save + f'/{model_name}.png')
 
     plt.show() if show else plt.close()
 
-
-def plot_total_means_differences(total_mean_diff: dict) -> None:
+def plot_total_cohens_d(total_cohens_d: dict) -> None:
     
-    models = list(total_mean_diff.keys())
-    values = list(total_mean_diff.values())
+    models = list(total_cohens_d.keys())
+    values = list(total_cohens_d.values())
     
     model_data = [(model, values[i], *get_group_and_color(model)) for i, model in enumerate(models)]
     model_data.sort(key=lambda x: x[2])  
@@ -140,8 +157,8 @@ def plot_total_means_differences(total_mean_diff: dict) -> None:
     ax = sns.barplot(x=sorted_models, y=sorted_values, palette=sorted_colors)
 
     plt.xlabel("Model", fontsize=14)
-    plt.ylabel("Value", fontsize=14)
-    plt.title("Model Means Differences Comparison", fontsize=16)
+    plt.ylabel("Cohen's d value", fontsize=14)
+    plt.title("Average Cohen's d value comparison across all models", fontsize=16)
     plt.xticks(rotation=45, ha='right', rotation_mode='anchor')
     plt.ylim(0, max(sorted_values) * 1.1)  
 
