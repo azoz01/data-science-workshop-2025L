@@ -41,24 +41,24 @@ class LinguisticFeatureProcessor:
         )
 
         sheet_data["polysyllables"] = sheet_data["response"].apply(lambda x: self._count_polysyllables(x))
-        sheet_data["abstraction"] = (
-            sheet_data["DAV"]
-            + 2 * sheet_data["IAV"]
-            + 3 * sheet_data["SV"]
-            + 4 * sheet_data["adj"]
-        ) / (
-            sheet_data["DAV"] + sheet_data["IAV"] + sheet_data["SV"] + sheet_data["adj"]
-        )
+        # sheet_data["abstraction"] = (
+        #     sheet_data["DAV"]
+        #     + 2 * sheet_data["IAV"]
+        #     + 3 * sheet_data["SV"]
+        #     + 4 * sheet_data["adj"]
+        # ) / (
+        #     sheet_data["DAV"] + sheet_data["IAV"] + sheet_data["SV"] + sheet_data["adj"]
+        # )
         sheet_data["lexical diversity"] = sheet_data["unique_words_cnt"]
         sheet_data["reading difficulty"] = (
             1.043 * sheet_data["polysyllables"].pow(1.0 / 2) * 30 / sheet_data["SENT"]
             + 3.1291
         )
-        sheet_data["analytical"] = sheet_data["Analytic"]
+        sheet_data["analytical"] = sheet_data["analytic"]
         sheet_data["self references"] = sheet_data["ipron"]
         sheet_data["certainty"] = sheet_data["certitude"]
         sheet_data["emotionality"] = sheet_data["emotion"]
-        sheet_data["hedges"] = sheet_data["Hedge"]
+        # sheet_data["hedges"] = sheet_data["Hedge"]
         return sheet_data
 
     def process_and_save(self, sheet_name: str) -> None:
