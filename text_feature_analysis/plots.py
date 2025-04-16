@@ -144,10 +144,10 @@ def plot_cohens_d_features(
 
     plt.show() if show else plt.close()
 
-def plot_total_cohens_d(total_cohens_d: dict, show: bool = True, path_to_save: str = None) -> None:
+def plot_models_comparison(model_value_dict: dict, label_value: str, show: bool = True, path_to_save: str = None) -> None:
     
-    models = list(total_cohens_d.keys())
-    values = list(total_cohens_d.values())
+    models = list(model_value_dict.keys())
+    values = list(model_value_dict.values())
     
     model_data = [(model, values[i], *get_group_and_color(model)) for i, model in enumerate(models)]
     model_data.sort(key=lambda x: x[2])  
@@ -161,9 +161,9 @@ def plot_total_cohens_d(total_cohens_d: dict, show: bool = True, path_to_save: s
     plt.figure(figsize=(8, 5))
     ax = sns.barplot(x=sorted_models, y=sorted_values, palette=sorted_colors)
 
-    plt.xlabel("Model", fontsize=14)
-    plt.ylabel("Cohen's d value", fontsize=14)
-    plt.title("Average Cohen's d comparison across all models", fontsize=16)
+    plt.xlabel("Model")
+    plt.ylabel(label_value)
+    plt.title(f"{label_value} comparison across all models")
     plt.xticks(rotation=45, ha='right', rotation_mode='anchor')
     plt.ylim(0, max(sorted_values) * 1.1)  
 
@@ -172,6 +172,7 @@ def plot_total_cohens_d(total_cohens_d: dict, show: bool = True, path_to_save: s
     # save and show
     if path_to_save:
         plt.tight_layout()
-        plt.savefig(path_to_save + f'/cohens_d_total.png')
+        plot_title = label_value.lower().replace(" ", "_")
+        plt.savefig(path_to_save + f'/{plot_title}_total.png')
 
     plt.show() if show else plt.close()
