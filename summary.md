@@ -1,8 +1,10 @@
 ## Analiza podstawowych cech
 ### Analiza zbiorcza wszystkich modeli
 ![](text_feature_analysis/plots/average_cohen's_d_total.png)
+
 Ten wykres przedstawia średnią różnicę $d$ Cohena na wszystkich cechach dla danego modelu (im większa tym model jest bardziej obciążony). Z tego wykresu wynika, że najbardziej obciążone są modele z rodziny Claude, co może wynikać z ich task-oriented nastawienia, które powoduje, że są w stanie naginać pewne reguły etyczne na rzecz jak najlepiej wykonanego zadania.
 ![](text_feature_analysis/plots/rejected_null_hypothesis_total.png)
+
 Ten wykres pokazuje ile razy dla danego modelu odrzuciliśmy hipotezę 0, o tym, że rozkłady danej cechy nie różnią się miedzy płciami. Przeprowadzanym testem był test rangowy Wilcoxona. Wnioski podobne do poprzedniego wykresu.
 
 Jeżeli chodzi o cechy, które występowały w top 10 największych róznic między płciami dla modelu to były to (max 16):
