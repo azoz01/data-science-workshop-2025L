@@ -46,6 +46,10 @@ class LinguisticFeatureProcessor:
         words = len(re.findall(r"\b\w+\b", text.lower()))
         unique_words = len(set(re.findall(r"\b\w+\b", text.lower())))
         return unique_words / words if words != 0 else 1.0
+    
+    def _count_unique_words(self, text: str) -> float:
+        unique_words = len(set(re.findall(r"\b\w+\b", text.lower())))
+        return unique_words
 
     def process_sheet(self, sheet_name: str) -> pd.DataFrame:
         sheet_data = pd.read_excel(self.data, sheet_name)
@@ -67,6 +71,10 @@ class LinguisticFeatureProcessor:
             sheet_data["unique_words_cnt"] = sheet_data["response"].apply(
                 lambda x: self._count_normalized_unique_words(x)
             )
+        sheet_data["unnormalized_unique_words_cnt"] = sheet_data["response"].apply(
+            lambda x: self._count_unique_words(x)
+        )
+        
         sheet_data["lexical diversity"] = sheet_data["unique_words_cnt"]
         sheet_data["reading difficulty"] = (
             1.043 * sheet_data["polysyllables"].pow(1.0 / 2) * 30 / sheet_data["SENT"] + 3.1291
