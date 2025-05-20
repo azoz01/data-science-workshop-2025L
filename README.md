@@ -12,7 +12,7 @@ Calculate linguistic features using following script:
 ``` bash
 cd linguistic_feature_analysis
 
-python calculate_linguistic_features_from_liwc.py --data ../data/LLM_all_enriched_baseline_02.xlsx -o ../data/processed
+python calculate_linguistic_features_from_liwc.py --data ../data/baseline.xlsx -o ../data/processed
 
 python calculate_linguistic_features_from_liwc.py --data ../data/llm_dark_patterns.xls -o ../data/processed
 ```
