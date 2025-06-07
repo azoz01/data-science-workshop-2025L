@@ -165,7 +165,7 @@ def plot_models_comparison(
 
     plt.xlabel("Model")
     plt.ylabel(label_value)
-    plt.title(f"{label_value} comparison across all models")
+    # plt.title(f"{label_value} comparison across all models")
     plt.xticks(rotation=45, ha="right", rotation_mode="anchor")
     plt.ylim(0, max(sorted_values) * 1.1)
 
