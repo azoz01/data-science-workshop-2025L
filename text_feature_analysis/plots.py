@@ -107,7 +107,7 @@ def plot_cohens_d_features(
     sorted_colors = ["skyblue" if val > 0 else "hotpink" for val in sorted_values]
 
     # figure and plot
-    figsize = (4, 6) if across_models else (12, 18)
+    figsize = (6, 9) if across_models else (12, 18)
     fig, ax = plt.subplots(figsize=figsize)
 
     sns.barplot(
@@ -136,17 +136,10 @@ def plot_cohens_d_features(
         bbox_to_anchor=(0.0, 1.01, 1.0, 0.102),
     )
     ax.set_title(f"Cohen's d value in {model_name}", pad=40)
-
-    # save and show
-    if path_to_save:
-        plt.savefig(path_to_save + f"/{model_name}.png")
-
-    plt.show() if show else plt.close()
+    return ax
 
 
-def plot_models_comparison(
-    model_value_dict: dict, label_value: str, show: bool = True, path_to_save: str = None
-) -> None:
+def plot_models_comparison(model_value_dict: dict, label_value: str) -> None:
 
     models = list(model_value_dict.keys())
     values = list(model_value_dict.values())
@@ -158,23 +151,16 @@ def plot_models_comparison(
     sorted_values = [m[1] for m in model_data]
     sorted_colors = [m[3] for m in model_data]
 
-    sns.set_style("whitegrid")
+    # sns.set_style("whitegrid")
 
     plt.figure(figsize=(8, 5))
-    ax = sns.barplot(x=sorted_models, y=sorted_values, palette=sorted_colors)
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.grid()
+    sns.barplot(x=sorted_models, y=sorted_values, palette=sorted_colors, ax=ax)
 
     plt.xlabel("Model")
     plt.ylabel(label_value)
-    # plt.title(f"{label_value} comparison across all models")
-    plt.xticks(rotation=45, ha="right", rotation_mode="anchor")
+    plt.xticks(rotation=90, ha="right", rotation_mode="anchor")
     plt.ylim(0, max(sorted_values) * 1.1)
 
     plt.subplots_adjust(bottom=0.2, left=0.15, right=0.9)
-
-    # save and show
-    if path_to_save:
-        plt.tight_layout()
-        plot_title = label_value.lower().replace(" ", "_")
-        plt.savefig(path_to_save + f"/{plot_title}_total.png")
-
-    plt.show() if show else plt.close()
